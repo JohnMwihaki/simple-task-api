@@ -7,13 +7,14 @@ const client= new PrismaClient();
 app.use(express.json());
 
 app.get("/", (req,res)=>{
-    console.group("i am testing")
+    console.log("I am testing")
+    res.send("Welcome to Tasks API ");
 })
  
 //Get all tasks
-app.get("/Tasks", async (req, res) => {
+app.get("/tasks", async (req, res) => {
   try {
-    const tasks_note = await client.Tasks.findMany({
+    const tasks_note = await client.Task.findMany({
         where:{
             isDeleted:false
         }
@@ -25,12 +26,12 @@ app.get("/Tasks", async (req, res) => {
 });
 
 //Get the specific task by id
-app.get("/Tasks/:id",async(req,res)=>{
+app.get("/tasks/:id",async(req,res)=>{
     try{
         const {id}=req.params;
-        const task=await client.Tasks.findUnique({
+        const task=await client.Task.findUnique({
             where:{
-                id:(id)
+                id:String(id)
             }
            
         });
@@ -48,10 +49,10 @@ app.get("/Tasks/:id",async(req,res)=>{
 });
 
 //create new tasks
-app.post("/Tasks",async(req,res)=>{
+app.post("/tasks",async(req,res)=>{
     try{
         const {title,description,isCompleted}=req.body
-        const task_data=await client.Tasks.create({
+        const task_data=await client.Task.create({
             data:{
                 title,
                 description,
@@ -69,13 +70,13 @@ app.post("/Tasks",async(req,res)=>{
 })
 
 //update tasks
-app.put("/Tasks/:id",(req,res)=>{
+app.put("/tasks/:id",async(req,res)=>{
     try{
         const {title,description,isCompleted}=req.body
         const {id}=req.params
-        const update_task=client.Tasks.update({
+        const update_task=await client.Task.update({
             where:{
-                id:(id)
+                id:String(id)
             },
             data:{
                 title:title && title,
@@ -92,12 +93,12 @@ app.put("/Tasks/:id",(req,res)=>{
 
 //delete data
 
-app.delete("/Tasks/:id",async (req,res)=>{
+app.delete("/tasks/:id",async (req,res)=>{
     try{
         const {id}= req.params
-        const deleted_data=await client.Tasks.update({
+        const deleted_data=await client.Task.update({
             where:{
-                id
+                id:String(id)
             },
             data:{
                 isDeleted:true
